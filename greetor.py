@@ -253,7 +253,7 @@ def welcome():
     
 #finally:
 def shuffleKid():
-    picturedelay = .05
+    picturedelay = 1
     for x in range(5):
         drawkid('zoe.jpg')
         time.sleep(picturedelay)
