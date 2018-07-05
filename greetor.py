@@ -279,7 +279,7 @@ def say_phrases():
     write_tts("Welcome Rebekah!", "welcome_rebekah.mp3")
     write_tts("Welcome Alex!", "welcome_alex.mp3")
     write_tts("Welcome Kelsey!", "welcome_kelsey.mp3")
-
+    #new change
 
 def pickKid():
     kid_list = ["zoe", "cydni", "laura",  "rabekah", "rylee"]
