@@ -93,7 +93,7 @@ textBox.fill(white)
 #duration = .1  # second
 #freq = 4000  # 
 
-reader = SimpleMFRC522.SimpleMFRC522()
+#reader = SimpleMFRC522.SimpleMFRC522()
 
 
 
@@ -278,8 +278,6 @@ def say_phrases():
     write_tts("Welcome Rylee!", "welcome_ry.mp3")
     write_tts("Welcome Rebekah!", "welcome_rebekah.mp3")
     write_tts("Welcome Alex!", "welcome_alex.mp3")
-    write_tts("Welcome Kelsey!", "welcome_kelsey.mp3")
-
 
 def pickKid():
     kid_list = ["zoe", "cydni", "laura",  "rabekah", "rylee"]
