@@ -13,36 +13,7 @@ import paho.mqtt.client as paho
 broker="52.36.168.10"
 port=1883
 
-def on_publish(client1,userdata,result):             #create function for callback
-    print("data published \n")
-    pass
-
-def on_connect(client1, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-    client1.subscribe("hottopic")
-
-def on_message(client1, userdata, msg):
-    msg.payload = msg.payload.decode("utf-8")
-    print(msg.payload)
-    if (msg.payload == 'me'):
-        print("msg received")
-        client1.disconnect()
-    else:
-        print("nothing to do")
-
-#client1= paho.Client("control1")                           #create client object
-#client1.on_publish = on_publish                          #assign function to callback
-#client1.connect(broker,port,60)                                 #establish connection
-#client1.on_connect = on_connect
-#client1.on_message = on_message
-#ret= client1.publish("hottopic",": Welcome to ZoeIke Tech")                   #publish
-
-
-#client1.loop_start()
-#while True:
-#    time.sleep(0.1)
-
-#quit()
+photo_path = '/home/pi/Pictures'
 
 display_width = 1024
 display_height = 1280
@@ -52,8 +23,10 @@ red = (255,0,0)
 
 pygame.init()
 print("pypy")
-movie_bubbles = '/home/pi/MFRC522-python/BlueBubbles.mp4'
-Popen(['omxplayer',  '--win', '"0 0 960 540"', movie_bubbles])
+
+def showvideo():
+    movie_bubbles = '/home/pi/MFRC522-python/BlueBubbles.mp4'
+    Popen(['omxplayer',  '--win', '"0 0 960 540"', movie_bubbles])
 
 
 img = pygame.image.load("test.jpg")
@@ -95,7 +68,36 @@ textBox.fill(white)
 
 reader = SimpleMFRC522.SimpleMFRC522()
 
+def on_publish(client1,userdata,result):             #create function for callback
+    print("data published \n")
+    pass
 
+def on_connect(client1, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+    client1.subscribe("hottopic")
+
+def on_message(client1, userdata, msg):
+    msg.payload = msg.payload.decode("utf-8")
+    print(msg.payload)
+    if (msg.payload == 'me'):
+        print("msg received")
+        client1.disconnect()
+    else:
+        print("nothing to do")
+
+#client1= paho.Client("control1")                           #create client object
+#client1.on_publish = on_publish                          #assign function to callback
+#client1.connect(broker,port,60)                                 #establish connection
+#client1.on_connect = on_connect
+#client1.on_message = on_message
+#ret= client1.publish("hottopic",": Welcome to ZoeIke Tech")                   #publish
+
+
+#client1.loop_start()
+#while True:
+#    time.sleep(0.1)
+
+#quit()
 
 def text_objects(text, font):
     textSurface = font.render(text, True, red)
@@ -255,15 +257,16 @@ def shuffleKid():
     for x in range(5):
         drawkid('zoe.jpg')
         time.sleep(picturedelay)
-        drawkid('cyd.jpg')
+        drawkid('cydni.jpg')
         time.sleep(picturedelay)
         drawkid('laura.jpg')
         time.sleep(picturedelay)
-        drawkid('bekah.jpg')
+        drawkid('rabekah.jpg')
         time.sleep(picturedelay)
 
 def drawkid(kid):
-    img = pygame.image.load(kid).convert()
+    kid_img = photo_path + '/' + kid
+    img = pygame.image.load(kid_img).convert()
     #img = pygame.transform.scale(img,(960,540))
     screen.blit(img,(0,0))
     pygame.display.flip()
@@ -287,7 +290,7 @@ def pickKid():
         rand = random.randint(0,len(kid_list)-1)
         print(rand)
         print(kid_list[rand])
-        drawkid("%s.jpg" %kid_list[rand])
+        drawkid("%s/%s.jpg" %photo_path %kid_list[rand])
         kid_list.pop(rand)
         time.sleep(.5)
         
@@ -297,7 +300,7 @@ try:
     #say_phrases()
     #darthFader()
     #testMQTT()
-    #shuffleKid()
+    shuffleKid()
     message_display("Pass...")
 
     while True:
