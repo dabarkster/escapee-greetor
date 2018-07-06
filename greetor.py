@@ -15,6 +15,7 @@ broker="192.168.56.220"
 port=1883
 
 photo_path = '/home/pi/Pictures'
+font_path  = "/home/pi/escapee-greetor/Fonts/"
 
 display_width = 1024
 display_height = 1280
@@ -105,7 +106,7 @@ def text_objects(text, font):
     return textSurface, textSurface.get_rect()
 
 def message_display(text):
-    term = '/home/pi/MFRC522-python/saucer.ttf'
+    term = font_path + 'saucer.ttf'
     #os.path.exists(term)
     largeText = pygame.font.Font(term, 115)
     TextSurf, TextRect = text_objects(text, largeText)
