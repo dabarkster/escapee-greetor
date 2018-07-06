@@ -213,7 +213,7 @@ def say_phrases():
     #new change
 
 def speak_to_me(kid):
-    name = sound_path + "presenting" + kid + ".mp3"
+    name = sound_path + "bio" + kid + ".mp3"
     pygame.mixer.music.load(name)
     pygame.mixer.music.play()
 
