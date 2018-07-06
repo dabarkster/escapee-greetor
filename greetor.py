@@ -16,6 +16,7 @@ port=1883
 
 photo_path = '/home/pi/Pictures'
 font_path  = "/home/pi/escapee-greetor/Fonts/"
+sound_path = "/home/pi/escapee-greetor/Sounds/"
 
 display_width = 1024
 display_height = 1280
@@ -211,6 +212,13 @@ def say_phrases():
     write_tts("Welcome Kelsey!", "welcome_kelsey.mp3")
     #new change
 
+def speak_to_me(kid):
+    name = sound_path + "presenting" + kid + ".mp3"
+    pygame.mixer.music.load(name)
+    pygame.mixer.music.play()
+
+
+
 try:
     #say_phrases()
     #darthFader()
@@ -232,14 +240,15 @@ try:
             print("ZOE")
             kid_img = photo_path + "/zoe.jpg"
             drawkid("zoe.jpg")
-            write_tts("We are glad you are able to help find an antidote to Dr Keans Kissy Boy experiment!", "access.mp3")
+            speak_to_me(text)
+            #write_tts("We are glad you are able to help find an antidote to Dr Keans Kissy Boy experiment!", "access.mp3")
             #write_tts("You have been granted full access to all laboratories and centers.", "access.mp3")
         
         elif text == "Cyd":
-            print("CYD")
+            print(text)
             kid_img = photo_path + "/cydni.jpg"
             drawkid("cydni.jpg")
-
+            speak_to_me("Cydni")
         elif text == "Jaycee":
             pass
         elif text == "Laura":
