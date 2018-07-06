@@ -8,9 +8,10 @@ import RPi.GPIO as GPIO
 import SimpleMFRC522
 import time
 #from google.cloud import texttospeech
-
 import paho.mqtt.client as paho
-broker="52.36.168.10"
+
+
+broker="192.168.56.220"
 port=1883
 
 photo_path = '/home/pi/Pictures'
@@ -85,19 +86,19 @@ def on_message(client1, userdata, msg):
     else:
         print("nothing to do")
 
-#client1= paho.Client("control1")                           #create client object
-#client1.on_publish = on_publish                          #assign function to callback
-#client1.connect(broker,port,60)                                 #establish connection
-#client1.on_connect = on_connect
-#client1.on_message = on_message
-#ret= client1.publish("hottopic",": Welcome to ZoeIke Tech")                   #publish
+def MQTT():
+    #client1= paho.Client("control1")                           #create client object
+    #client1.on_publish = on_publish                          #assign function to callback
+    #client1.connect(broker,port,60)                                 #establish connection
+    #client1.on_connect = on_connect
+    #client1.on_message = on_message
+    #ret= client1.publish("hottopic",": Welcome to ZoeIke Tech")                   #publish
 
 
-#client1.loop_start()
-#while True:
-#    time.sleep(0.1)
-
-#quit()
+    #client1.loop_start()
+    #while True:
+    #    time.sleep(0.1)
+    pass
 
 def text_objects(text, font):
     textSurface = font.render(text, True, red)
@@ -132,63 +133,6 @@ def darthFader():
         led.stop()            # stop the led PWM output  
         GPIO.cleanup()        # clean up GPIO on CTRL+C exit
 
-def run_quickstart():
-    from google.cloud import texttospeech
-    voice_name='en-AU-Standard-C'
-    voice_language='en-AU'
-    # Instantiates a client
-    client = texttospeech.TextToSpeechClient()
-
-    synthesis_input = texttospeech.types.SynthesisInput(text="Welcome to BioTech")
-
-    # Build the voice request, select the language code ("en-US") and the ssml
-    # voice gender ("neutral")
-    voice = texttospeech.types.VoiceSelectionParams(
-        language_code=voice_language,
-        name=voice_name,
-        ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
-
-    # Select the type of audio file you want returned
-    audio_config = texttospeech.types.AudioConfig(
-        audio_encoding=texttospeech.enums.AudioEncoding.MP3)
-
-    # Perform the text-to-speech request on the text input with the selected
-    # voice parameters and audio file type
-    response = client.synthesize_speech(synthesis_input, voice, audio_config)
-    # The response's audio_content is binary.
-    with open('welcome.mp3', 'wb') as out:
-        # Write the response to the output file.
-        out.write(response.audio_content)
-        print('Audio content written to file "welcome.mp3"')
-    
-    os.system("mpg123 welcome.mp3")
-
-    # Set the text input to be synthesized
-    synthesis_input = texttospeech.types.SynthesisInput(text="Untangle web design and development with this ebook bundle from O'Reilly Media! Snare titles like React Native Cookbook, CSS: The Definitive Guide, High Performance Images, and more. Then go forth and weave something awesome.")
-
-    # Build the voice request, select the language code ("en-US") and the ssml
-    # voice gender ("neutral")
-    voice = texttospeech.types.VoiceSelectionParams(
-        language_code=voice_language,
-        name=voice_name,
-        ssml_gender=texttospeech.enums.SsmlVoiceGender.NEUTRAL)
-
-    # Select the type of audio file you want returned
-    audio_config = texttospeech.types.AudioConfig(
-        audio_encoding=texttospeech.enums.AudioEncoding.MP3)
-
-    # Perform the text-to-speech request on the text input with the selected
-    # voice parameters and audio file type
-    response = client.synthesize_speech(synthesis_input, voice, audio_config)
-    # The response's audio_content is binary.
-    with open('output.mp3', 'wb') as out:
-        # Write the response to the output file.
-        out.write(response.audio_content)
-        print('Audio content written to file "output.mp3"')
-    
-    os.system("mpg123 output.mp3")
-    # [END tts_quickstart]
-
 def write_tts(text_to_say, out_file):
 
     synthesis_input = texttospeech.types.SynthesisInput(text = text_to_say)
@@ -212,35 +156,7 @@ def write_tts(text_to_say, out_file):
     fileplay = "mpg123 %s" %(out_file)
     os.system(fileplay)
 
-def welcome():
 
-    
-    write_tts("You have been granted full access to all laboratories and centers.")
-
-
-    #synthesis_input = texttospeech.types.SynthesisInput(text="Welcome to BioTech, please hold while I check your credentials")
-    
-    #voice = texttospeech.types.VoiceSelectionParams(
-    #    language_code=voice_language,
-    #    name=voice_name,
-    #    ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
-    
-    #audio_config = texttospeech.types.AudioConfig(
-    #    audio_encoding=texttospeech.enums.AudioEncoding.MP3)
- 
-    #response = client.synthesize_speech(synthesis_input, voice, audio_config)
-    
-    #with open('welcome.mp3', 'wb') as out:
-       # Write the response to the output file.
-    #    out.write(response.audio_content)
-    #    print('Audio content written to file "welcome.mp3"')
-        
-    #os.system("mpg123 welcome.mp3")
-    
-
-        
-    #os.system("mpg123 authorized.mp3")
-    # [END tts_quickstart]
 
 #try:
 #    while True:
@@ -253,7 +169,7 @@ def welcome():
     
 #finally:
 def shuffleKid():
-    picturedelay = 1
+    picturedelay = .01
     for x in range(5):
         drawkid('zoe.jpg')
         time.sleep(picturedelay)
@@ -271,6 +187,16 @@ def drawkid(kid):
     screen.blit(img,(0,0))
     pygame.display.flip()
 
+def pickKid():
+    kid_list = ["zoe", "cydni", "laura",  "rabekah", "rylee"]
+    for x in range(len(kid_list)):
+        rand = random.randint(0,len(kid_list)-1)
+        print(rand)
+        print(kid_list[rand])
+        drawkid("%s/%s.jpg" %photo_path %kid_list[rand])
+        kid_list.pop(rand)
+        time.sleep(.5)
+
 def say_phrases():
     write_tts("We are glad you are able to help find an antidote to Dr Keans anti-boy-otic Boy experiment!", "kissy.mp3")
     write_tts("You have been granted full access to all laboratories and centers.", "access.mp3")
@@ -284,33 +210,18 @@ def say_phrases():
     write_tts("Welcome Kelsey!", "welcome_kelsey.mp3")
     #new change
 
-def pickKid():
-    kid_list = ["zoe", "cydni", "laura",  "rabekah", "rylee"]
-    for x in range(len(kid_list)):
-        rand = random.randint(0,len(kid_list)-1)
-        print(rand)
-        print(kid_list[rand])
-        drawkid("%s/%s.jpg" %photo_path %kid_list[rand])
-        kid_list.pop(rand)
-        time.sleep(.5)
-        
-
-
 try:
     #say_phrases()
     #darthFader()
     #testMQTT()
-    shuffleKid()
+    #shuffleKid()
     message_display("Pass...")
 
     while True:
-    	pass
-    done = True;
-    while not done:
        #for event in pygame.event.get():
        #  if event.type == pygame.QUIT:
        #     done = True
-        #print("Hold a tag near the reader")
+        print("Hold a tag near the reader")
         id, text = reader.read()
         print(id)
         text = text.replace(" ","")
@@ -318,13 +229,15 @@ try:
         
         if text == "Zoe":
             print("ZOE")
-            drawkid("zoeinfo.jpg")
+            kid_img = photo_path + "/zoe.jpg"
+            drawkid("zoe.jpg")
             write_tts("We are glad you are able to help find an antidote to Dr Keans Kissy Boy experiment!", "access.mp3")
             #write_tts("You have been granted full access to all laboratories and centers.", "access.mp3")
         
         elif text == "Cyd":
             print("CYD")
-            drawkid("test2.jpg")
+            kid_img = photo_path + "/cydni.jpg"
+            drawkid("cydni.jpg")
 
         elif text == "Jaycee":
             pass
