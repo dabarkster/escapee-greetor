@@ -1,14 +1,18 @@
-#new change
-import pygame, time, os, random
-from subprocess import Popen
-import pygame.camera
+#!/usr/bin/python3
 
-#from __future__ import print_function
-import RPi.GPIO as GPIO
+
+import os
+import alsaaudio
+import pygame
+import random
 import SimpleMFRC522
 import time
-#from google.cloud import texttospeech
 import paho.mqtt.client as paho
+from subprocess import Popen
+#import pygame.camera
+#from __future__ import print_function
+#import RPi.GPIO as GPIO
+
 
 
 broker="192.168.56.220"
@@ -17,6 +21,7 @@ port=1883
 photo_path = '/home/pi/Pictures'
 font_path  = "/home/pi/escapee-greetor/Fonts/"
 sound_path = "/home/pi/escapee-greetor/Sounds/"
+music_path = "/home/pi/escapee-greetor/Music/"
 
 display_width = 1024
 display_height = 1280
@@ -70,6 +75,9 @@ textBox.fill(white)
 #freq = 4000  # 
 
 reader = SimpleMFRC522.SimpleMFRC522()
+
+
+
 
 def on_publish(client1,userdata,result):             #create function for callback
     print("data published \n")
