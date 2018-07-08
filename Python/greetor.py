@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 import os
 import alsaaudio
 import pygame
