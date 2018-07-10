@@ -34,7 +34,7 @@ def graphFFT(pcm):
 def record():
 	p = pyaudio.PyAudio()
 	inStream = p.open(format=pyaudio.paInt16,channels=1,rate=rate,
-						input_device_index=soundcard,input=True)
+						input_device_index=soundcard,output=True)
 	linear=[0]*fftsize
 	while True:
 		linear=linear[fftsize/overlap:]
