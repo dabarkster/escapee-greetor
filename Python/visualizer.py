@@ -13,12 +13,13 @@ fftsize=512
 currentCol=0
 scooter=[]
 overlap=5 #1 for raw, realtime - 8 or 16 for high-definition
+channels=1
 def graphFFT(pcm):
 	global currentCol, data
 	ffty=scipy.fftpack.fft(pcm) #convert WAV to FFT
 	ffty=abs(ffty[0:len(ffty)/2])/500 #FFT is mirror-imaged
 	#ffty=(scipy.log(ffty))*30-50 # if you want uniform data
-	print "MIN:t%stMAX:t%s"%(min(ffty),max(ffty))
+	print ("MIN:t%stMAX:t%s"%(min(ffty),max(ffty)))
 	for i in range(len(ffty)):
 		if ffty[i]<0: ffty[i]=0
 		if ffty[i]>255: ffty[i]=255
@@ -34,7 +35,7 @@ def graphFFT(pcm):
 def record():
 	p = pyaudio.PyAudio()
 	inStream = p.open(format=pyaudio.paInt16,channels=1,rate=rate,
-						input_device_index=soundcard,input=True)
+						input_device_index=soundcard,output=True)
 	linear=[0]*fftsize
 	while True:
 		linear=linear[fftsize/overlap:]
@@ -42,14 +43,20 @@ def record():
 		linear=numpy.append(linear,pcm)
 		graphFFT(linear)
 
-pal = [(max((x-128)*2,0),x,min(x*2,255)) for x in xrange(256)]
-print max(pal),min(pal)
-data=numpy.array(numpy.zeros((windowWidth,fftsize/2)),dtype=int)
+pal = [(max((x-128)*2,0),x,min(x*2,255)) for x in range(256)]
+print (max(pal),min(pal))
+fftint = int(fftsize/2)
+data=numpy.array(numpy.zeros((windowWidth,fftint)),dtype=numpy.float)
 #data=Numeric.array(data) # for older PyGame that requires Numeric
 pygame.init() #crank up PyGame
 pygame.display.set_caption("Simple Spectrograph")
-screen=pygame.display.set_mode((windowWidth,fftsize/2))
-world=pygame.Surface((windowWidth,fftsize/2),depth=8) # MAIN SURFACE
+#print(windowWidth)
+#print(fftsize)
+#screen=pygame.display.set_mode(((windowWidth,int(fftsize/2))
+
+screen=pygame.display.set_mode((windowWidth,fftint))
+
+world=pygame.Surface((windowWidth,fftint),depth=8) # MAIN SURFACE
 world.set_palette(pal)
 t_rec=threading.Thread(target=record) # make thread for record()
 t_rec.daemon=True # daemon mode forces thread to quit with program
