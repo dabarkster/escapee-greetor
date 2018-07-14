@@ -9,7 +9,10 @@ from moviepy.tools import cvsecs
 
 pg.init()
 pg.display.set_caption('MoviePy')
+pg.init()
 
+while True:
+	pass
 
 def imdisplay(imarray, screen=None):
     """Splashes the given image array on the given pygame screen """
