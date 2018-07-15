@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import os
-import alsaaudio
+#import alsaaudio
 import pygame
 import random
 import SimpleMFRC522
@@ -17,7 +17,7 @@ from subprocess import Popen
 broker="192.168.56.220"
 port=1883
 
-photo_path = '/home/pi/Pictures'
+photo_path = '/home/pi/Pictures/'
 font_path  = "/home/pi/escapee-greetor/Fonts/"
 sound_path = "/home/pi/escapee-greetor/Sounds/"
 music_path = "/home/pi/escapee-greetor/Music/"
@@ -36,7 +36,7 @@ def showvideo():
     Popen(['omxplayer',  '--win', '"0 0 960 540"', movie_bubbles])
 
 
-img = pygame.image.load("test.jpg")
+img = pygame.image.load(photo_path + "test.jpg")
 #screen = pygame.display.set_mode((0,0));
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
 screen = pygame.display.set_mode((640, 480), pygame.NOFRAME);
