@@ -54,7 +54,7 @@ def callback(outdata, frames, time, status):
     else:
         outdata[:] = data
 
-    print(data)
+    #print(data)
 
 def update_plot(frame):
     """This is called by matplotlib for each plot update.
@@ -70,11 +70,11 @@ def update_plot(frame):
         except queue.Empty:
             break
         shift = len(data)
-        print(data)
+        #print(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
         print(len(plotdata))
-        while 1:
-            pass
+        #while 1:
+        #    pass
         plotdata[-shift:, :] = data
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
