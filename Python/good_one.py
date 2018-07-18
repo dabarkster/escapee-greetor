@@ -37,6 +37,8 @@ event = threading.Event()
 
 
 def callback(outdata, frames, time, status):
+    
+    print("**************audio callback")
     assert frames == BLOCK
     if status.output_underflow:
         print('Output underflow: increase blocksize?', file=sys.stderr)
