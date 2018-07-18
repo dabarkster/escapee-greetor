@@ -26,7 +26,7 @@ def int_or_str(text):
     except ValueError:
         return text
 
-wav_file = ‘/home/pi/escapee-greetor/Python/temp.wav’
+wav_file = '/home/pi/escapee-greetor/Python/temp.wav'
 BUFFER = 200
 BLOCK = 2048
 channels = [1]
