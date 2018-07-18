@@ -116,7 +116,7 @@ try:
 
         stream = sd.RawOutputStream(
             samplerate=f.samplerate, blocksize=BLOCK,
-            device=0, channels=f.channels, dtype=‘float32’,
+            device=0, channels=f.channels, dtype='float32',
             callback=callback, finished_callback=event.set)
         interval = 30
         ani = FuncAnimation(fig, update_plot, interval=interval, blit=True)
