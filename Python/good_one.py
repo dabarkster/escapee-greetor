@@ -73,6 +73,7 @@ def update_plot(frame):
         except queue.Empty:
             break
         shift = len(data)
+        print(shift)
         repr(data.raw)
         plotdata = np.roll(plotdata, -shift, axis=0)
         repr(plotdata.raw)
@@ -85,6 +86,7 @@ def update_plot(frame):
 
 
 try:
+    print("**************start main")
     from matplotlib.animation import FuncAnimation
     import sounddevice as sd
     import soundfile as sf
@@ -101,7 +103,9 @@ try:
 
         length = int(200 * 44100 / (1000 * 10))
         plotdata = np.zeros((length, len(channels)))
-
+        print(length)
+        repr(plotdata.raw)
+        
         fig, ax = plt.subplots()
         lines = ax.plot(plotdata)
         channels = [1,1]
@@ -133,7 +137,7 @@ try:
                 repr(sig.raw)
                 #print(sig.value)
                 q.put(data, timeout=timeout)
-                repr(q.raw)
+                repr(q.qsize)
             event.wait()  # Wait until playback is finished
 
 except KeyboardInterrupt:
