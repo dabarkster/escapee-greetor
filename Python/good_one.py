@@ -35,6 +35,7 @@ q = queue.Queue(maxsize=BUFFER)
 event = threading.Event()
 
 
+
 def callback(outdata, frames, time, status):
     assert frames == BLOCK
     if status.output_underflow:
