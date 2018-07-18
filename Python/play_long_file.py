@@ -52,7 +52,7 @@ def callback(outdata, frames, time, status):
     else:
         outdata[:] = data
 
-    #print(data)
+    print(data)
 
 
 try:
