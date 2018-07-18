@@ -37,6 +37,8 @@ event = threading.Event()
 
 
 def callback(outdata, frames, time, status):
+    
+    print("**************audio callback")
     assert frames == BLOCK
     if status.output_underflow:
         print('Output underflow: increase blocksize?', file=sys.stderr)
@@ -63,6 +65,7 @@ def update_plot(frame):
     therefore the queue tends to contain multiple blocks of audio data.
 
     """
+    print("**************update_plot callback")
     global plotdata
     while True:
         try:
@@ -70,11 +73,20 @@ def update_plot(frame):
         except queue.Empty:
             break
         shift = len(data)
+<<<<<<< HEAD
         #print(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
         print(len(plotdata))
         #while 1:
         #    pass
+=======
+        print(shift)
+        repr(data.raw)
+        plotdata = np.roll(plotdata, -shift, axis=0)
+        repr(plotdata.raw)
+        while 1:
+            pass
+>>>>>>> f9c32f1596c01673e816f6a9732d8aad5d7b7b7c
         plotdata[-shift:, :] = data
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
@@ -82,6 +94,7 @@ def update_plot(frame):
 
 
 try:
+    print("**************start main")
     from matplotlib.animation import FuncAnimation
     import sounddevice as sd
     import soundfile as sf
@@ -98,7 +111,9 @@ try:
 
         length = int(200 * 44100 / (1000 * 10))
         plotdata = np.zeros((length, len(channels)))
-
+        print(length)
+        repr(plotdata.raw)
+        
         fig, ax = plt.subplots()
         lines = ax.plot(plotdata)
         channels = [1,1]
@@ -127,8 +142,10 @@ try:
             while data:
                 data = f.buffer_read(BLOCK, ctype='float')
                 sig = np.frombuffer(data, dtype=np.float32, count=30)
-                print(sig)
+                repr(sig.raw)
+                #print(sig.value)
                 q.put(data, timeout=timeout)
+                repr(q.qsize)
             event.wait()  # Wait until playback is finished
 
 except KeyboardInterrupt:
