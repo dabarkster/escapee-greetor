@@ -63,6 +63,7 @@ def update_plot(frame):
     therefore the queue tends to contain multiple blocks of audio data.
 
     """
+    print("**************update_plot callback")
     global plotdata
     while True:
         try:
@@ -70,9 +71,9 @@ def update_plot(frame):
         except queue.Empty:
             break
         shift = len(data)
-        print(data)
+        repr(data.raw)
         plotdata = np.roll(plotdata, -shift, axis=0)
-        print(len(plotdata))
+        repr(plotdata.raw)
         while 1:
             pass
         plotdata[-shift:, :] = data
@@ -127,8 +128,10 @@ try:
             while data:
                 data = f.buffer_read(BLOCK, ctype='float')
                 sig = np.frombuffer(data, dtype=np.float32, count=30)
-                print(sig)
+                repr(sig.raw)
+                #print(sig.value)
                 q.put(data, timeout=timeout)
+                repr(q.raw)
             event.wait()  # Wait until playback is finished
 
 except KeyboardInterrupt:
