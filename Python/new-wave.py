@@ -7,7 +7,7 @@ import sys
 chunk = 1024
 
 #Open the wav file in read-only mode
-f = wave.open(r"D:\1.wav","rb")
+f = wave.open(r"temp.wav","rb")
 
 p = pyaudio.PyAudio()
 
@@ -24,6 +24,7 @@ data = f.readframes(chunk)
 while data !="":
     stream.write(data)
     data = f.readframes(chunk)
+    print(data)
 
 #Stop data flow
 stream.stop_stream()

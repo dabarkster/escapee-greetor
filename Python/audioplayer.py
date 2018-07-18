@@ -19,7 +19,7 @@ import numpy as np
 import multiprocessing
 
 duration = 12.5
-filename = '/data/AveFormosissima.wav'
+filename = 'temp.wav'
 
 wf = wave.open(filename, 'rb')
 

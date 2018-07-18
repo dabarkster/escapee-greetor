@@ -52,14 +52,20 @@ def callback(outdata, frames, time, status):
     else:
         outdata[:] = data
 
+    #print(data)
+
 
 try:
     import sounddevice as sd
     import soundfile as sf
+    import numpy as np
 
     with sf.SoundFile(wav_file) as f:
         for _ in range(BUFFER):
             data = f.buffer_read(BLOCK, ctype='float')
+            dt = np.dtype(float)
+            dt = dt.newbyteorder('>')
+            np.frombuffer(data, dtype=dt)
             if not data:
                 break
             q.put_nowait(data)  # Pre-fill queue

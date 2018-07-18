@@ -75,12 +75,21 @@ def update_plot(frame):
         line.set_ydata(plotdata[:, column])
     return lines
 
+wav_file = '/home/pi/escapee-greetor/Python/temp.wav'
+BUFFER = 20
+BLOCK = 2048
 
 try:
     from matplotlib.animation import FuncAnimation
     import matplotlib.pyplot as plt
     import numpy as np
     import sounddevice as sd
+    import soundfile as sf
+
+    data = sf.read(wav_file)
+    sd.play(data, 44100)
+
+    print(data)
 
     if args.list_devices:
         print(sd.query_devices())
@@ -90,6 +99,7 @@ try:
         args.samplerate = device_info['default_samplerate']
 
     length = int(args.window * args.samplerate / (1000 * args.downsample))
+    print(args.channels)
     plotdata = np.zeros((length, len(args.channels)))
 
     fig, ax = plt.subplots()
@@ -107,6 +117,8 @@ try:
     stream = sd.InputStream(
         device=args.device, channels=max(args.channels),
         samplerate=args.samplerate, callback=audio_callback)
+
+    outstream = sd.OutputStream
     ani = FuncAnimation(fig, update_plot, interval=args.interval, blit=True)
     with stream:
         plt.show()
