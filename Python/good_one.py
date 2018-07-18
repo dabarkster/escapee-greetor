@@ -91,7 +91,7 @@ try:
 
     with sf.SoundFile(wav_file) as f:
         for _ in range(BUFFER):
-            data = f.buffer_read(BLOCK, ctype=‘float’)
+            data = f.buffer_read(BLOCK, ctype='float')
             if not data:
                 break
             q.put_nowait(data)  # Pre-fill queue
@@ -103,13 +103,13 @@ try:
         lines = ax.plot(plotdata)
         channels = [1,1]
         if len(channels) > 1:
-            ax.legend([‘channel {}’.format(c) for c in channels],
-                      loc=‘lower left’, ncol=len(channels))
+            ax.legend(['channel {}'.format(c) for c in channels],
+                      loc='lower left', ncol=len(channels))
         ax.axis((0, len(plotdata), -1, 1))
         ax.set_yticks([0])
         ax.yaxis.grid(True)
-        ax.tick_params(bottom=‘off’, top=‘off’, labelbottom=‘off’,
-                       right=‘off’, left=‘off’, labelleft=‘off’)
+        ax.tick_params(bottom='off', top='off', labelbottom='off',
+                       right='off', left='off', labelleft='off')
         fig.tight_layout(pad=0)
 
 
@@ -125,16 +125,16 @@ try:
             timeout = BLOCK * BUFFER / f.samplerate
             plt.show()
             while data:
-                data = f.buffer_read(BLOCK, ctype=‘float’)
+                data = f.buffer_read(BLOCK, ctype='float')
                 sig = np.frombuffer(data, dtype=np.float32, count=30)
                 print(sig)
                 q.put(data, timeout=timeout)
             event.wait()  # Wait until playback is finished
 
 except KeyboardInterrupt:
-    parser.exit(‘\nInterrupted by user’)
+    parser.exit('\nInterrupted by user')
 except queue.Full:
     # A timeout occured, i.e. there was an error in the callback
     parser.exit(1)
 except Exception as e:
-    parser.exit(type(e).__name__ + ‘: ‘ + str(e))
+    parser.exit(type(e).__name__ + ': ' + str(e))
