@@ -39,17 +39,17 @@ event = threading.Event()
 def callback(outdata, frames, time, status):
     assert frames == BLOCK
     if status.output_underflow:
-        print(‘Output underflow: increase blocksize?’, file=sys.stderr)
+        print('Output underflow: increase blocksize?', file=sys.stderr)
         raise sd.CallbackAbort
     assert not status
     try:
         data = q.get_nowait()
     except queue.Empty:
-        print(‘Buffer is empty: increase buffersize?’, file=sys.stderr)
+        print('Buffer is empty: increase buffersize?', file=sys.stderr)
         raise sd.CallbackAbort
     if len(data) < len(outdata):
         outdata[:len(data)] = data
-        outdata[len(data):] = b’\x00’ * (len(outdata) - len(data))
+        outdata[len(data):] = b'\x00' * (len(outdata) - len(data))
         raise sd.CallbackStop
     else:
         outdata[:] = data
