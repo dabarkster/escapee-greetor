@@ -44,6 +44,7 @@ args = parser.parse_args()
 if any(c < 1 for c in args.channels):
     parser.error('argument CHANNEL: must be >= 1')
 mapping = [c - 1 for c in args.channels]  # Channel numbers start with 1
+#print(mapping)
 q = queue.Queue()
 
 
@@ -66,8 +67,11 @@ def update_plot(frame):
     while True:
         try:
             data = q.get_nowait()
+            sig = np.frombuffer(data, dtype=np.float32)
         except queue.Empty:
             break
+        #print(data)
+        #print(sig)
         shift = len(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
         plotdata[-shift:, :] = data

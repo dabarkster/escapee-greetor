@@ -27,36 +27,22 @@ def int_or_str(text):
         return text
 
 wav_file = '/home/pi/escapee-greetor/Python/temp.wav'
-BUFFER = 200
+BUFFER = 300
 BLOCK = 2048
-channels = [1]
+channels = [1,1]
+mapping = [0]
 
 q = queue.Queue(maxsize=BUFFER)
 event = threading.Event()
 
 
 
-def callback(outdata, frames, time, status):
-    
-    #print("**************audio callback")
-    assert frames == BLOCK
-    if status.output_underflow:
-        print('Output underflow: increase blocksize?', file=sys.stderr)
-        raise sd.CallbackAbort
-    assert not status
-    try:
-        data = q.get_nowait()
-        sig = np.frombuffer(data, dtype=np.float32, count=30)
-        #print(sig)
-    except queue.Empty:
-        print('Buffer is empty: increase buffersize?', file=sys.stderr)
-        raise sd.CallbackAbort
-    if len(data) < len(outdata):
-        outdata[:len(data)] = data
-        outdata[len(data):] = b'\x00' * (len(outdata) - len(data))
-        raise sd.CallbackStop
-    else:
-        outdata[:] = data
+def audio_callback(outdata, frames, time, status):
+    """This is called (from a separate thread) for each audio block."""
+    if status:
+        print(status, file=sys.stderr)
+    # Fancy indexing with mapping creates a (necessary!) copy:
+    q.put(outdata[::10, mapping])
     
 
     #print("************outdata")
@@ -65,13 +51,6 @@ def callback(outdata, frames, time, status):
     #print(data)
 
 def update_plot(frame):
-    """This is called by matplotlib for each plot update.
-
-    Typically, audio callbacks happen more frequently than plot updates,
-    therefore the queue tends to contain multiple blocks of audio data.
-
-    """
-    print("**************update_plot callback")
     global plotdata
     while True:
         try:
@@ -79,25 +58,11 @@ def update_plot(frame):
         except queue.Empty:
             break
         shift = len(data)
-
-        #print(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
-        print(plotdata.size)
-        #while 1:
-        #    pass
-        print("shift")
-        print(shift)
-        print("data")
-        print(data)
-        plotdata = np.roll(plotdata, -shift, axis=0)
-        print("plotdata")
-        #print(plotdata)
-        #while 1:
-        #    pass
-
         plotdata[-shift:, :] = data
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
+
     return lines
 
 
@@ -110,57 +75,71 @@ try:
     import matplotlib.pyplot as plt
 
 
-    with sf.SoundFile(wav_file) as f:
-        for _ in range(BUFFER):
-            data = f.buffer_read(BLOCK, ctype='float')
-            #sig = np.frombuffer(data, dtype=np.float32, count=30)
+    f = sf.SoundFile(wav_file)
+    data = f.read(frames=1, dtype='float')
+    q.put(data)  # Pre-fill queue
 
-            #print(data)
-            if not data:
-                break
-            q.put_nowait(data)  # Pre-fill queue
+    length = int(200 * 44100 / (1000 * 10))
 
-        length = int(200 * 44100 / (1000 * 10))
-        plotdata = np.zeros((length, len(channels)))
-        print(length)
-        
-        fig, ax = plt.subplots()
-        lines = ax.plot(plotdata)
-        channels = [1,1]
-        if len(channels) > 1:
-            ax.legend(['channel {}'.format(c) for c in channels],
-                      loc='lower left', ncol=len(channels))
-        ax.axis((0, len(plotdata), -1, 1))
-        ax.set_yticks([0])
-        ax.yaxis.grid(True)
-        ax.tick_params(bottom='off', top='off', labelbottom='off',
-                       right='off', left='off', labelleft='off')
-        fig.tight_layout(pad=0)
+
+    plotdata = np.zeros((length, len(channels)))
+    
+    fig, ax = plt.subplots()
+    lines = ax.plot(plotdata)
+
+    if len(channels) > 1:
+        ax.legend(['channel {}'.format(c) for c in channels],
+                  loc='lower left', ncol=len(channels))
+    ax.axis((0, len(plotdata), -.01, .01))
+    ax.set_yticks([0])
+    ax.yaxis.grid(True)
+    ax.tick_params(bottom='off', top='off', labelbottom='off',
+                   right='off', left='off', labelleft='off')
+    fig.tight_layout(pad=0)
 
 
 
-        stream = sd.RawOutputStream(
-            samplerate=f.samplerate, blocksize=BLOCK,
-            device=0, channels=f.channels, dtype='float32',
-            callback=callback, finished_callback=event.set)
+    stream = sd.OutputStream(
+        samplerate=f.samplerate, blocksize=BLOCK,
+        device=0, channels=f.channels, dtype='float32',
+        callback=audio_callback, finished_callback=event.set)
 
-        interval = 30
-        ani = FuncAnimation(fig, update_plot, interval=interval, blit=True)
-        
-        with stream:
-            print("**************start stream")
-            timeout = BLOCK * BUFFER / f.samplerate
-            plt.show()
-            while data:
-                data = f.buffer_read(BLOCK, ctype='float')
-                #sig = np.frombuffer(data, dtype=np.float32, count=30)
-                print("*************sig")
-                print(data)
+    interval = 30
+    ani = FuncAnimation(fig, update_plot, interval=interval, blit=True)
+    
+    #data = q.get_nowait()
+    #sd.play(data)
 
-                #print(sig.value)
-                q.put(data, timeout=timeout)
+    with stream:
+        print("**************start stream")
+        timeout = BLOCK * BUFFER / f.samplerate
+        plt.show()
 
-            event.wait()  # Wait until playback is finished
+        while data.any():
+            print("++++++++++++get data")
+            data = f.read(frames=-1, dtype='float')
+            q.put(data, timeout=timeout)
+
+        event.wait()  # Wait until playback is finished
+
+    while 1:
+        pass
+
+
+    with sd.Stream(channels=f.channels, callback=audio_callback):
+        print("**************start stream")
+        #timeout = BLOCK * BUFFER / f.samplerate
+        plt.show()
+        print("++++++++++++get data")
+        #data = f.read(frames=-1, dtype='float')
+        #q.put(data, timeout=timeout)
+
+        event.wait()  # Wait until playback is finished
+
+    while 1:
+        pass
+
+
 
 except KeyboardInterrupt:
     parser.exit('\nInterrupted by user')

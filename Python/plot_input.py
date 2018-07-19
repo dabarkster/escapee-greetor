@@ -44,6 +44,7 @@ args = parser.parse_args()
 if any(c < 1 for c in args.channels):
     parser.error('argument CHANNEL: must be >= 1')
 mapping = [c - 1 for c in args.channels]  # Channel numbers start with 1
+print(mapping)
 q = queue.Queue()
 
 
