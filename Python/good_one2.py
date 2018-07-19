@@ -38,7 +38,7 @@ event = threading.Event()
 
 def callback(outdata, frames, time, status):
     
-    print("**************audio callback")
+    #print("**************audio callback")
     assert frames == BLOCK
     if status.output_underflow:
         print('Output underflow: increase blocksize?', file=sys.stderr)
@@ -46,6 +46,8 @@ def callback(outdata, frames, time, status):
     assert not status
     try:
         data = q.get_nowait()
+        sig = np.frombuffer(data, dtype=np.float32, count=30)
+        #print(sig)
     except queue.Empty:
         print('Buffer is empty: increase buffersize?', file=sys.stderr)
         raise sd.CallbackAbort
@@ -55,7 +57,11 @@ def callback(outdata, frames, time, status):
         raise sd.CallbackStop
     else:
         outdata[:] = data
+    
 
+    #print("************outdata")
+    #print(outdata)
+    #q.put(outdata[::10, 1])
     #print(data)
 
 def update_plot(frame):
@@ -73,20 +79,22 @@ def update_plot(frame):
         except queue.Empty:
             break
         shift = len(data)
-<<<<<<< HEAD
+
         #print(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
-        print(len(plotdata))
+        print(plotdata.size)
         #while 1:
         #    pass
-=======
+        print("shift")
         print(shift)
-        repr(data.raw)
+        print("data")
+        print(data)
         plotdata = np.roll(plotdata, -shift, axis=0)
-        repr(plotdata.raw)
-        while 1:
-            pass
->>>>>>> f9c32f1596c01673e816f6a9732d8aad5d7b7b7c
+        print("plotdata")
+        #print(plotdata)
+        #while 1:
+        #    pass
+
         plotdata[-shift:, :] = data
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
@@ -105,6 +113,9 @@ try:
     with sf.SoundFile(wav_file) as f:
         for _ in range(BUFFER):
             data = f.buffer_read(BLOCK, ctype='float')
+            #sig = np.frombuffer(data, dtype=np.float32, count=30)
+
+            #print(data)
             if not data:
                 break
             q.put_nowait(data)  # Pre-fill queue
@@ -112,7 +123,6 @@ try:
         length = int(200 * 44100 / (1000 * 10))
         plotdata = np.zeros((length, len(channels)))
         print(length)
-        repr(plotdata.raw)
         
         fig, ax = plt.subplots()
         lines = ax.plot(plotdata)
@@ -133,19 +143,23 @@ try:
             samplerate=f.samplerate, blocksize=BLOCK,
             device=0, channels=f.channels, dtype='float32',
             callback=callback, finished_callback=event.set)
+
         interval = 30
         ani = FuncAnimation(fig, update_plot, interval=interval, blit=True)
         
         with stream:
+            print("**************start stream")
             timeout = BLOCK * BUFFER / f.samplerate
             plt.show()
             while data:
                 data = f.buffer_read(BLOCK, ctype='float')
-                sig = np.frombuffer(data, dtype=np.float32, count=30)
-                repr(sig.raw)
+                #sig = np.frombuffer(data, dtype=np.float32, count=30)
+                print("*************sig")
+                print(data)
+
                 #print(sig.value)
                 q.put(data, timeout=timeout)
-                repr(q.qsize)
+
             event.wait()  # Wait until playback is finished
 
 except KeyboardInterrupt:
