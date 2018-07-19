@@ -29,7 +29,7 @@ def int_or_str(text):
 wav_file = '/home/pi/escapee-greetor/Python/temp.wav'
 BUFFER = 300
 BLOCK = 2048
-channels = [1,1]
+channels = [1]
 mapping = [0]
 
 q = queue.Queue(maxsize=BUFFER)
@@ -42,10 +42,11 @@ def audio_callback(outdata, frames, time, status):
     if status:
         print(status, file=sys.stderr)
     # Fancy indexing with mapping creates a (necessary!) copy:
-    q.put(outdata[::10, mapping])
+    print(outdata)
+    q.put(outdata[:, mapping])
     
 
-    #print("************outdata")
+    print("************audio")
     #print(outdata)
     #q.put(outdata[::10, 1])
     #print(data)
@@ -76,17 +77,21 @@ try:
 
 
     f = sf.SoundFile(wav_file)
-    data = f.read(frames=1, dtype='float')
+    data = f.read(frames=100, dtype='float')
     q.put(data)  # Pre-fill queue
+    
+    stream = sd.OutputStream(
+        samplerate=f.samplerate, blocksize=BLOCK,
+        device=0, channels=f.channels, dtype='float32',
+        callback=audio_callback, finished_callback=event.set)
+
+    #sd.play(data)
+    print(len(data))
 
     length = int(200 * 44100 / (1000 * 10))
-
-
-    plotdata = np.zeros((length, len(channels)))
-    
+    plotdata = np.zeros((length, len(channels)))  
     fig, ax = plt.subplots()
     lines = ax.plot(plotdata)
-
     if len(channels) > 1:
         ax.legend(['channel {}'.format(c) for c in channels],
                   loc='lower left', ncol=len(channels))
@@ -99,29 +104,28 @@ try:
 
 
 
-    stream = sd.OutputStream(
-        samplerate=f.samplerate, blocksize=BLOCK,
-        device=0, channels=f.channels, dtype='float32',
-        callback=audio_callback, finished_callback=event.set)
+
 
     interval = 30
     ani = FuncAnimation(fig, update_plot, interval=interval, blit=True)
     
     #data = q.get_nowait()
-    #sd.play(data)
-
+ 
     with stream:
         print("**************start stream")
         timeout = BLOCK * BUFFER / f.samplerate
         plt.show()
 
-        while data.any():
-            print("++++++++++++get data")
-            data = f.read(frames=-1, dtype='float')
-            q.put(data, timeout=timeout)
+        #while len(data) > 1:
+        #    print("++++++++++++get data")
+        data = f.read(frames=100, dtype='float')
+        q.put(data, timeout=timeout)
 
-        event.wait()  # Wait until playback is finished
-
+        #event.wait()  # Wait until playback is finished
+    
+    sd.wait()
+    print(len(data))
+    print("done")
     while 1:
         pass
 

@@ -10,8 +10,19 @@ import paho.mqtt.client as paho
 from subprocess import Popen
 #import pygame.camera
 #from __future__ import print_function
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
+ID_584186413815  = "Cydni"
+ID_584193154610  = "Jaycee"
+ID_584187026004  = "Alex"
+ID_584190114375  = "Laura"
+ID_584186694458  = "Rylee"
+ID_584195675615  = "Kelsey"
+ID_584196296274  = "Malia"
+ID_584195129101  = "Rabekah"
+ID_584186168122  = "Christine"
+ID_584188700149  = "Kara"
+ID_1065873189125 = "Zoe"
 
 
 broker="192.168.56.220"
@@ -231,7 +242,7 @@ try:
     #darthFader()
     #testMQTT()
     #shuffleKid()
-    message_display("Pass...")
+    #message_display("Pass...")
 
     while True:
        #for event in pygame.event.get():
@@ -240,35 +251,52 @@ try:
         print("Hold a tag near the reader")
         id, text = reader.read()
         print(id)
-        text = text.replace(" ","")
-        print(len(text))
+        print(text)
+        id = "ID_" + str(id)
+        #text = text.replace(" ","")
+        #print(len(text))
+        print(id)
+        if id == "ID_1065873189125":
+            kid = "zoe"
         
-        if text == "Zoe":
-            print("ZOE")
-            kid_img = photo_path + "/zoe.jpg"
-            drawkid("zoe.jpg")
-            speak_to_me(text)
-            #write_tts("We are glad you are able to help find an antidote to Dr Keans Kissy Boy experiment!", "access.mp3")
-            #write_tts("You have been granted full access to all laboratories and centers.", "access.mp3")
-        
-        elif text == "Cyd":
-            print(text)
-            kid_img = photo_path + "/cydni.jpg"
-            drawkid("cydni.jpg")
-            speak_to_me("Cydni")
-        elif text == "Jaycee":
-            pass
-        elif text == "Laura":
-            pass
-        elif text == "Rylee":
-            pass
-        elif text == "Alex":
-            pass
-        elif text == "Rabekah":
-            pass
-        else:
-            print(text)
+        elif id == "ID_584186413815":
+            kid = "cydni"
 
+        elif id == "ID_584193154610":
+            kid = "jaycee"
+
+        elif id == "ID_584187026004":
+            kid = "alex"
+
+        elif id == "ID_584190114375":
+            kid = "laura"
+
+        elif id == "ID_584186694458":
+            kid = "rylee"
+
+        elif id == "ID_584195675615":
+            kid = "kelsey"
+
+        elif id == "ID_584196296274":
+            kid = "malia"           
+        
+        elif id == "ID_584195129101":
+            kid = "rabekah"
+
+        elif id == "ID_584186168122":
+            kid = "christine"
+
+        elif id == "ID_584188700149":
+            kid = "kara"
+
+        else:
+            print("None")
+
+
+        print(kid)
+        kid_img = photo_path + "/" + kid + ".jpg"
+        drawkid("%s.jpg" % (kid))
+        #speak_to_me(text)
         time.sleep(1)
 
 
