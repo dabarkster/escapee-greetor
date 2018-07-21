@@ -268,8 +268,9 @@ def say_phrases():
     write_tts("Welcome Kelsey!", "welcome_kelsey.mp3")
     #new change
 
-def speak_to_me(kid):
-    name = sound_path + "bio" + kid + ".mp3"
+def speak_to_me(file):
+    #name = sound_path + "bio" + kid + ".mp3"
+    name = sound_path + "/" + file + ".mp3"
     pygame.mixer.music.load(name)
     pygame.mixer.music.play()
 
@@ -298,6 +299,8 @@ try:
         #text = text.replace(" ","")
         #print(len(text))
         print(id)
+        speak_to_me("beep")
+
         if id == "ID_1065873189125":
             kid = "zoe"
             bio = ("Dr Zoe Hirata", "Neuroscientist")
@@ -370,7 +373,7 @@ try:
         #screen.blit(img, rect)
         #pygame.display.flip()
         #pygame.display.flip()
-        #time.sleep(3)
+        time.sleep(2)
 
 finally:
     print("cleaning up")
