@@ -27,10 +27,15 @@ ID_584188700149  = "Kara"
 ID_1065873189125 = "Zoe"
 
 screen_width = 1700
-screen_height = 1000
+screen_height = 1080
 photo_size = 400
 photo_ratio = 536/820
+photo_x = 200
+photo_y = 200
 
+black = (0,0,0)
+white = (255,255,255)
+red = (255,0,0)
 
 broker="192.168.56.220"
 port=1883
@@ -40,24 +45,73 @@ font_path  = "/home/pi/escapee-greetor/Fonts/"
 sound_path = "/home/pi/escapee-greetor/Sounds/"
 music_path = "/home/pi/escapee-greetor/Music/"
 
-display_width = 1024
-display_height = 1280
-black = (0,0,0)
-white = (255,255,255)
-red = (255,0,0)
-
 pygame.init()
+pygame.font.init()
 print("pypy")
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
+
+#os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
 #screen = pygame.display.set_mode((0,0));
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.NOFRAME);
 
 done = False
 
-area_text = pygame.Rect(0,0,640,640)
+area_photo = pygame.Rect(200,200,600,811)
+photo_box = screen.subsurface(area_photo)
+area_text = pygame.Rect(area_photo.width + 50, photo_y + 50, photo_x + 640, photo_y + 400)
+#print(screen)
+#print(area_text)
 textBox = screen.subsurface(area_text)
-textBox.fill(white)
+
+
+
+#photo = photo.copy()
+#photoarea = photo.get_rect()
+
+def text_objects(text, font):
+    textSurface = font.render(text, True, red)
+    return textSurface, textSurface.get_rect()
+
+def message_display(bio):
+    text1 = bio[0]
+    text2 = bio[1]
+
+
+    #textBox.fill(black)
+    #textBox.set_alpha(50)
+    #pygame.display.update()
+
+    font = pygame.font.SysFont("Grobold", 100)
+    text_rect = (0,0)
+
+    #pygame.display.flip()
+    #term = font_path + 'saucer.ttf'
+    #os.path.exists(term)
+    #largeText = pygame.font.Font(term, 115)
+    #TextSurf, TextRect = text_objects(text, largeText)
+    #TextRect.center = ((area_text.width/2),(area_text.height/2))
+    font = pygame.font.SysFont("Grobold", 100)
+    text_surf = font.render(text1, True, (240,240,240))
+    textBox.blit(text_surf, text_rect)
+
+    font = pygame.font.SysFont("Grobold", 50)
+    text_rect = (0,75)
+    text_surf = font.render(text2, True, (240,240,240))
+    textBox.blit(text_surf, text_rect)
+
+    textBox.set_alpha(50)
+    #pygame.display.update()
+ 
+
+def drawkid(kid):
+    kid_img = photo_path + '/' + kid
+    img = pygame.image.load(kid_img).convert()
+    img = pygame.transform.scale(img,(photo_size,int(photo_size/photo_ratio)))
+
+    #photo_box.fill(black)
+    #print(img)
+    photo_box.blit(img,(0,0))
+    #pygame.display.flip()
 
 #pygame.camera.init()
 #cam = pygame.camera.Camera("/dev/video0", (320, 240))
@@ -67,16 +121,10 @@ textBox.fill(white)
 #    screen.blit(image, (0,0))
 #    pygame.display.update()
 
-
-
 #textBox = textBox.copy()
 #screen.blit(textBox,(0,0))
 #pygame.display.flip()
 
-#area_photo = pygame.Rect(0,0,540,300)
-#photo = screen.subsurface(area_photo)
-#photo = photo.copy()
-#photoarea = photo.get_rect()
 #print photo.get_parent()
 
 #client = texttospeech.TextToSpeechClient()
@@ -122,19 +170,7 @@ def MQTT():
     #    time.sleep(0.1)
     pass
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, red)
-    return textSurface, textSurface.get_rect()
 
-def message_display(text):
-    term = font_path + 'saucer.ttf'
-    #os.path.exists(term)
-    largeText = pygame.font.Font(term, 115)
-    TextSurf, TextRect = text_objects(text, largeText)
-    TextRect.center = ((area_text.width/2),(area_text.height/2))
-    status = screen.blit(TextSurf,TextRect.center)
-    pygame.display.update()
-    time.sleep(2)
 
 def darthFader():
     GPIO.setup(26, GPIO.OUT)# set GPIO 26 as output for led  
@@ -202,19 +238,12 @@ def shuffleKid():
         drawkid('rabekah.jpg')
         time.sleep(picturedelay)
 
-def drawkid(kid):
-    kid_img = photo_path + '/' + kid
-    img = pygame.image.load(kid_img).convert()
-    img = pygame.transform.scale(img,(photo_size,int(photo_size/photo_ratio)))
-    screen.blit(img,(200,200))
-    pygame.display.flip()
-
 def drawbackground():
     back_img = photo_path + '/logo_background.jpg'
     img = pygame.image.load(back_img).convert()
     screen.blit(img,(0,0))
     print("back")
-    pygame.display.flip()
+    #pygame.display.flip()
 
 def pickKid():
     kid_list = ["zoe", "cydni", "laura",  "rabekah", "rylee"]
@@ -247,12 +276,15 @@ def speak_to_me(kid):
 
 
 try:
+    textBox.fill(black)
+    drawbackground()
+    pygame.display.flip()
     #say_phrases()
     #darthFader()
     #testMQTT()
     #shuffleKid()
     #message_display("Pass...")
-    drawbackground()
+
 
     while True:
        #for event in pygame.event.get():
@@ -268,50 +300,62 @@ try:
         print(id)
         if id == "ID_1065873189125":
             kid = "zoe"
+            bio = ("Dr Zoe Hirata", "Neuroscientist")
         
         elif id == "ID_584186413815":
             kid = "cydni"
+            bio = ("Dr Cydni Kodani", "Microbiologist")
 
         elif id == "ID_584193154610":
             kid = "jaycee"
+            bio = ("Dr Jaycee Hasegawa", "Environmental Engineer")
 
         elif id == "ID_584187026004":
             kid = "alex"
+            bio = ("Dr Alex Soriano", "Physicist")
 
         elif id == "ID_584190114375":
             kid = "laura"
+            bio = ("Dr Laura Ishii", "Nuclear Physicist")
 
         elif id == "ID_584186694458":
             kid = "rylee"
+            bio = ("Dr Rylee Tanita", "Biochemist")
 
         elif id == "ID_584195675615":
             kid = "kelsey"
+            bio = ("Dr Kelsey Yoshikawa", "Biomedical Engineer")
 
         elif id == "ID_584196296274":
             kid = "malia"           
+            bio = ("Dr Malia Wagatsuma", "Nuclear Physicist")
         
         elif id == "ID_584195129101":
             kid = "rabekah"
+            bio = ("Dr Rabekah Okimoto", "Biophysicist")
 
         elif id == "ID_584186168122":
             kid = "christine"
+            bio = ("Dr Christine Hill", "Biologist")
 
         elif id == "ID_584188700149":
             kid = "kara"
+            bio = ("Dr Kara Uemoto", "Robotics Engineer")
 
         else:
             kid = "none"
 
         if kid != "none":
             print(kid)
+            textBox.fill(black)
+            drawbackground()
+            message_display(bio)
             kid_img = photo_path + "/" + kid + ".jpg"
             drawkid("%s.jpg" % (kid))
+            pygame.display.flip()
             #speak_to_me(text)
         else:
             drawbackground()
-
-
-        time.sleep(1)
 
 
         #
