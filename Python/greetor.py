@@ -12,6 +12,8 @@ from subprocess import Popen
 #from __future__ import print_function
 import RPi.GPIO as GPIO
 
+reader = SimpleMFRC522.SimpleMFRC522()
+
 ID_584186413815  = "Cydni"
 ID_584193154610  = "Jaycee"
 ID_584187026004  = "Alex"
@@ -23,6 +25,11 @@ ID_584195129101  = "Rabekah"
 ID_584186168122  = "Christine"
 ID_584188700149  = "Kara"
 ID_1065873189125 = "Zoe"
+
+screen_width = 1700
+screen_height = 1000
+photo_size = 400
+photo_ratio = 536/820
 
 
 broker="192.168.56.220"
@@ -42,16 +49,15 @@ red = (255,0,0)
 pygame.init()
 print("pypy")
 
-def showvideo():
-    movie_bubbles = '/home/pi/MFRC522-python/BlueBubbles.mp4'
-    Popen(['omxplayer',  '--win', '"0 0 960 540"', movie_bubbles])
-
-
-img = pygame.image.load(photo_path + "test.jpg")
-#screen = pygame.display.set_mode((0,0));
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
-screen = pygame.display.set_mode((640, 480), pygame.NOFRAME);
+#screen = pygame.display.set_mode((0,0));
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.NOFRAME);
 
+done = False
+
+area_text = pygame.Rect(0,0,640,640)
+textBox = screen.subsurface(area_text)
+textBox.fill(white)
 
 #pygame.camera.init()
 #cam = pygame.camera.Camera("/dev/video0", (320, 240))
@@ -61,18 +67,13 @@ screen = pygame.display.set_mode((640, 480), pygame.NOFRAME);
 #    screen.blit(image, (0,0))
 #    pygame.display.update()
 
-done = False
 
-
-area_text = pygame.Rect(0,0,400,400)
-textBox = screen.subsurface(area_text)
-textBox.fill(white)
 
 #textBox = textBox.copy()
 #screen.blit(textBox,(0,0))
 #pygame.display.flip()
 
-#area_photo = pygame.Rect(0,0,960,540)
+#area_photo = pygame.Rect(0,0,540,300)
 #photo = screen.subsurface(area_photo)
 #photo = photo.copy()
 #photoarea = photo.get_rect()
@@ -84,10 +85,11 @@ textBox.fill(white)
 #duration = .1  # second
 #freq = 4000  # 
 
-reader = SimpleMFRC522.SimpleMFRC522()
 
 
-
+def showvideo():
+    movie_bubbles = '/home/pi/MFRC522-python/BlueBubbles.mp4'
+    Popen(['omxplayer',  '--win', '"0 0 960 540"', movie_bubbles])
 
 def on_publish(client1,userdata,result):             #create function for callback
     print("data published \n")
@@ -203,8 +205,15 @@ def shuffleKid():
 def drawkid(kid):
     kid_img = photo_path + '/' + kid
     img = pygame.image.load(kid_img).convert()
-    #img = pygame.transform.scale(img,(960,540))
+    img = pygame.transform.scale(img,(photo_size,int(photo_size/photo_ratio)))
+    screen.blit(img,(200,200))
+    pygame.display.flip()
+
+def drawbackground():
+    back_img = photo_path + '/logo_background.jpg'
+    img = pygame.image.load(back_img).convert()
     screen.blit(img,(0,0))
+    print("back")
     pygame.display.flip()
 
 def pickKid():
@@ -243,6 +252,7 @@ try:
     #testMQTT()
     #shuffleKid()
     #message_display("Pass...")
+    drawbackground()
 
     while True:
        #for event in pygame.event.get():
@@ -290,13 +300,17 @@ try:
             kid = "kara"
 
         else:
-            print("None")
+            kid = "none"
+
+        if kid != "none":
+            print(kid)
+            kid_img = photo_path + "/" + kid + ".jpg"
+            drawkid("%s.jpg" % (kid))
+            #speak_to_me(text)
+        else:
+            drawbackground()
 
 
-        print(kid)
-        kid_img = photo_path + "/" + kid + ".jpg"
-        drawkid("%s.jpg" % (kid))
-        #speak_to_me(text)
         time.sleep(1)
 
 
