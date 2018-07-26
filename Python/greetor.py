@@ -268,7 +268,7 @@ def say_phrases():
     write_tts("Welcome Kelsey!", "welcome_kelsey.mp3")
     #new change
 
-def speak_to_me(file):
+def play_mp3(file):
     #name = sound_path + "bio" + kid + ".mp3"
     name = sound_path + "/" + file + ".mp3"
     pygame.mixer.music.load(name)
@@ -276,7 +276,7 @@ def speak_to_me(file):
 
 
 
-try:
+def main():
     textBox.fill(black)
     drawbackground()
     pygame.display.flip()
@@ -286,7 +286,7 @@ try:
     #shuffleKid()
     #message_display("Pass...")
 
-
+    gameexit = False
     while True:
        #for event in pygame.event.get():
        #  if event.type == pygame.QUIT:
@@ -299,7 +299,7 @@ try:
         #text = text.replace(" ","")
         #print(len(text))
         print(id)
-        speak_to_me("beep")
+        play_mp3("beep")
 
         if id == "ID_1065873189125":
             kid = "zoe"
@@ -356,11 +356,12 @@ try:
             kid_img = photo_path + "/" + kid + ".jpg"
             drawkid("%s.jpg" % (kid))
             pygame.display.flip()
-            #speak_to_me(text)
+            play_mp3("bio_%s" %kid)
         else:
             drawbackground()
 
 
+        print(kid)
         #
         #screen.blit(photo,(0,0))
 
@@ -375,7 +376,22 @@ try:
         #pygame.display.flip()
         time.sleep(2)
 
-finally:
+        #for event in pygame.event.get():
+        #    if event.type == pygame.QUIT:
+        #        pass
+                #gameexit = True
+        #    elif event.type == pygame.KEYDOWN:
+        #        if event.key == K_ESCAPE:
+        #            pass
+                    #gameexit = True
+                    
+
+
+
+if __name__ == "__main__":
+    main()
     print("cleaning up")
     GPIO.cleanup()
+    pygame.quit()
+    quit()
 
