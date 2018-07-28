@@ -21,12 +21,13 @@ ID_584190114375  = "Laura"
 ID_584186694458  = "Rylee"
 ID_584195675615  = "Kelsey"
 ID_584196296274  = "Malia"
-ID_584195129101  = "Rabekah"
+#ID_584195129101  = "Rebekah"
+ID_584191373560  = "Rebekah"
 ID_584186168122  = "Christine"
 ID_584188700149  = "Kara"
 ID_1065873189125 = "Zoe"
 
-screen_width = 1700
+screen_width = 1920
 screen_height = 1080
 photo_size = 400
 photo_ratio = 536/820
@@ -51,8 +52,7 @@ print("pypy")
 
 
 #os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
-#screen = pygame.display.set_mode((0,0));
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.NOFRAME);
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN);
 
 done = False
 
@@ -277,7 +277,7 @@ def play_mp3(file):
 
 
 def main():
-    textBox.fill(black)
+    #textBox.fill(black)
     drawbackground()
     pygame.display.flip()
     #say_phrases()
@@ -287,7 +287,7 @@ def main():
     #message_display("Pass...")
 
     gameexit = False
-    while True:
+    while not gameexit:
        #for event in pygame.event.get():
        #  if event.type == pygame.QUIT:
        #     done = True
@@ -333,9 +333,9 @@ def main():
             kid = "malia"           
             bio = ("Dr Malia Wagatsuma", "Nuclear Physicist")
         
-        elif id == "ID_584195129101":
-            kid = "rabekah"
-            bio = ("Dr Rabekah Okimoto", "Biophysicist")
+        elif id == "ID_584191373560":
+            kid = "rebekah"
+            bio = ("Dr Rebekah Okimoto", "Biophysicist")
 
         elif id == "ID_584186168122":
             kid = "christine"
@@ -376,14 +376,12 @@ def main():
         #pygame.display.flip()
         time.sleep(2)
 
-        #for event in pygame.event.get():
-        #    if event.type == pygame.QUIT:
-        #        pass
-                #gameexit = True
-        #    elif event.type == pygame.KEYDOWN:
-        #        if event.key == K_ESCAPE:
-        #            pass
-                    #gameexit = True
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gameexit = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    gameexit = True
                     
 
 
